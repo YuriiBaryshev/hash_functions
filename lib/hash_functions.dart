@@ -4,5 +4,4 @@
 library hash_functions;
 
 export 'src/hash_functions_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/hash_algorithms/sha1.dart';

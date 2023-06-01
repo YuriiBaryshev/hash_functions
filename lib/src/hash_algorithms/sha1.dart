@@ -19,8 +19,10 @@ class SHA1 extends HashAlgorithm {
     paddedData.addAll(data);
     paddedData.add(0x80); //append '1'
     paddedData.addAll(List.filled(56 - (paddedData.length & 0x3f), 0));
+
     String hexInterpretationOfBitsLen = originalLengthInBits.toRadixString(16);
     hexInterpretationOfBitsLen = hexInterpretationOfBitsLen.padLeft(16, '0');
+
     for(int i = 0; i < 16; i += 2) {
       paddedData.add(int.parse(hexInterpretationOfBitsLen.substring(i, i+2), radix: 16));
     }

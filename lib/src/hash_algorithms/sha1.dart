@@ -28,8 +28,46 @@ class SHA1 extends HashAlgorithm {
   ///Hashing data re-initialising hashing state
   @override
   Uint8List process(Uint8List data) {
-    // TODO: implement process
-    throw UnimplementedError();
+    List<int> h = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0];
+    data = pad(data);
+    for(int i = 0; i < data.length; i += 0x40) {
+        List<int> w = List.filled(80, 0);
+        int t = 0;
+        for(; t < 16; t++) {
+          w[t] = data[t << 2 + i] << 24 | data[t << 2 + i + 1] << 16 |
+            data[t << 2 + i + 2] << 8 | data[t << 2 + i + 3];
+        }
+
+        for(t = 16; t < 80; t++) {
+          w[t] = w[t-3] ^ w[t-8] ^ w[t-16] ^ w[t-16];
+          w[t] = _circularLeftShiftFor32Bit(w[t], 1);
+        }
+
+        int a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
+        int temp = 0;
+        for(t = 0; t < 80; t++) {
+          temp = _circularLeftShiftFor32Bit(a, 5) + _f(b, c, d, t)+ e + w[t] + k[t];
+          e = d;
+          d = c;
+          c = _circularLeftShiftFor32Bit(b, 30);
+          b = a;
+          a = temp;
+        }
+        h[0] += a;
+        h[1] += b;
+        h[2] += c;
+        h[3] +=d;
+        h[4] += e;
+    }
+    Uint8List hashValue = Uint8List.fromList(List.filled(20, 0));
+    for(int i = 0, distance = 24; i < 4; i++, distance -= 8) {
+      hashValue[i] = h[0] >> distance;
+      hashValue[i + 4] = h[1] >> distance;
+      hashValue[i + 8] = h[2] >> distance;
+      hashValue[i + 12] = h[3] >> distance;
+      hashValue[i + 16] = h[4] >> distance;
+    }
+    return hashValue;
   }
 
 

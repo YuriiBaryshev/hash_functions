@@ -28,4 +28,29 @@ class SHA1 extends HashAlgorithm {
     }
     return Uint8List.fromList(paddedData);
   }
+
+  //SHA-1 primitives
+  int _circularLeftShiftFor32Bit(int number, int distance) {
+    return (number << distance) | (number >> 32 - distance) & 0xffffffff;
+  }
+
+
+  int _f(int b, int c, int d, int iteration) {
+    int output;
+    if(iteration < 20) {
+      output = (b & c) | (~b & d);
+    } else {
+      if(iteration < 40) {
+        output = b ^ c ^ d;
+      } else {
+        if(iteration < 60) {
+          output = (b & c) | (b & d) | (c & d);
+        } else {
+          output = output = b ^ c ^ d;
+        }
+      }
+    }
+
+    return output;
+  }
 }

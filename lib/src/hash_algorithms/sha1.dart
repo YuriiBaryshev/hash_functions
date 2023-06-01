@@ -4,6 +4,28 @@ import 'package:hash_functions/src/hash_algorithms/hash_algorithm.dart';
 
 ///Implements SHA-1 algorithm
 class SHA1 extends HashAlgorithm {
+  List<int> k = List.filled(80, 0);
+
+  SHA1() {
+    for(int i = 0; i < 80; i++) {
+      if(i < 20) {
+        k[i] = 0xA827999;
+      } else {
+        if(i < 40) {
+          k[i] = 0x6ED9EBA1;
+        } else {
+          if(i < 60) {
+           k[i] = 0x8F1BBCDC;
+          } else {
+            k[i] = 0xCA62C1D6;
+          }
+        }
+      }
+    }
+  }
+
+
+  ///Hashing data re-initialising hashing state
   @override
   Uint8List process(Uint8List data) {
     // TODO: implement process
@@ -28,6 +50,7 @@ class SHA1 extends HashAlgorithm {
     }
     return Uint8List.fromList(paddedData);
   }
+
 
   //SHA-1 primitives
   int _circularLeftShiftFor32Bit(int number, int distance) {

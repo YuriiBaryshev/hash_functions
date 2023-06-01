@@ -60,5 +60,27 @@ void main() {
       data = Uint8List.fromList(intData);
       expect(sha1PC.process(data), sha1.process(data));
     });
+
+
+    test('performance comparison test', () {
+      final sha1PC = Digest("SHA-1"); //SHA-1 implementation from PointyCastle lib
+
+      List<int> intData = List.filled(1000000, 0);
+      Uint8List data = Uint8List.fromList(intData);
+      final stopwatch = Stopwatch();
+      stopwatch.start();
+      sha1PC.process(data);
+      stopwatch.stop();
+      int timePC = stopwatch.elapsedTicks;
+
+      stopwatch.reset();
+      stopwatch.start();
+      sha1.process(data);
+      stopwatch.stop();
+      int timeThisLib = stopwatch.elapsedTicks;
+
+      print("Pointycastle lib SHA-1 implementation time in ticks is $timePC");
+      print("This lib SHA-1 implementation time in ticks is $timeThisLib");
+    });
   });
 }

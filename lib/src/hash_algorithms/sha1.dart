@@ -9,7 +9,7 @@ class SHA1 extends HashAlgorithm {
   SHA1() {
     for(int i = 0; i < 80; i++) {
       if(i < 20) {
-        k[i] = 0xA827999;
+        k[i] = 0x5A827999;
       } else {
         if(i < 40) {
           k[i] = 0x6ED9EBA1;
@@ -34,30 +34,34 @@ class SHA1 extends HashAlgorithm {
         List<int> w = List.filled(80, 0);
         int t = 0;
         for(; t < 16; t++) {
-          w[t] = data[t << 2 + i] << 24 | data[t << 2 + i + 1] << 16 |
-            data[t << 2 + i + 2] << 8 | data[t << 2 + i + 3];
+          w[t] = data[(t << 2) + i] << 24 | data[(t << 2) + i + 1] << 16 |
+            data[(t << 2) + i + 2] << 8 | data[(t << 2) + i + 3];
         }
 
         for(t = 16; t < 80; t++) {
-          w[t] = w[t-3] ^ w[t-8] ^ w[t-16] ^ w[t-16];
+          w[t] = w[t-3] ^ w[t-8] ^ w[t-14] ^ w[t-16];
           w[t] = _circularLeftShiftFor32Bit(w[t], 1);
         }
 
         int a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
         int temp = 0;
         for(t = 0; t < 80; t++) {
-          temp = _circularLeftShiftFor32Bit(a, 5) + _f(b, c, d, t)+ e + w[t] + k[t];
+          temp =(_circularLeftShiftFor32Bit(a, 5) + _f(b, c, d, t)) & 0xffffffff;
+          temp = (temp + e) & 0xffffffff;
+          temp = (temp + w[t]) & 0xffffffff;
+          temp = (temp + k[t]) & 0xffffffff;
           e = d;
           d = c;
           c = _circularLeftShiftFor32Bit(b, 30);
           b = a;
           a = temp;
         }
-        h[0] += a;
-        h[1] += b;
-        h[2] += c;
-        h[3] +=d;
-        h[4] += e;
+        h[0] = (h[0] + a) & 0xffffffff;
+        h[1] = (h[1] + b) & 0xffffffff;
+        h[2] = (h[2] + c) & 0xffffffff;
+        h[3] = (h[3] + d) & 0xffffffff;
+        h[4] = (h[4] + e) & 0xffffffff;
+
     }
     Uint8List hashValue = Uint8List.fromList(List.filled(20, 0));
     for(int i = 0, distance = 24; i < 4; i++, distance -= 8) {
@@ -92,14 +96,14 @@ class SHA1 extends HashAlgorithm {
 
   //SHA-1 primitives
   int _circularLeftShiftFor32Bit(int number, int distance) {
-    return (number << distance) | (number >> 32 - distance) & 0xffffffff;
+    return ((number << distance) | (number >> 32 - distance)) & 0xffffffff;
   }
 
 
   int _f(int b, int c, int d, int iteration) {
     int output;
     if(iteration < 20) {
-      output = (b & c) | (~b & d);
+      output = (b & c) | ((~b) & d);
     } else {
       if(iteration < 40) {
         output = b ^ c ^ d;
@@ -107,7 +111,7 @@ class SHA1 extends HashAlgorithm {
         if(iteration < 60) {
           output = (b & c) | (b & d) | (c & d);
         } else {
-          output = output = b ^ c ^ d;
+          output = b ^ c ^ d;
         }
       }
     }

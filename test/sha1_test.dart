@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:hash_functions/hash_functions.dart';
 import 'package:test/test.dart';
+import 'package:pointycastle/pointycastle.dart' show Digest;
 
 void main() {
   group('SHA-1 implementation tests', () {
@@ -32,6 +33,32 @@ void main() {
         0x9c, 0xd0, 0xd8, 0x9d
       ]);
       expect(sha1.process(data), hash);
+    });
+    
+    
+    test('output comparison with pointycastle lib', () {
+      final sha1PC = Digest("SHA-1"); //SHA-1 implementation from PointyCastle lib
+
+      List<int> intData = [];
+      for(int i = 0; i < 256; i++) {
+        intData.add(i);
+      }
+      Uint8List data = Uint8List.fromList(intData);
+      expect(sha1PC.process(data), sha1.process(data));
+
+      intData = [];
+      for(int i = 0; i < 1024; i++) {
+        intData.add(i);
+      }
+      data = Uint8List.fromList(intData);
+      expect(sha1PC.process(data), sha1.process(data));
+
+      intData = [];
+      for(int i = 0; i < 2048; i++) {
+        intData.add(i);
+      }
+      data = Uint8List.fromList(intData);
+      expect(sha1PC.process(data), sha1.process(data));
     });
   });
 }

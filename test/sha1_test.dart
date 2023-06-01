@@ -7,9 +7,6 @@ void main() {
   group('SHA-1 implementation tests', () {
     final SHA1 sha1 = SHA1();;
 
-    setUp(() {
-      // Additional setup goes here.
-    });
 
     test('creates proper message padding', () {
       Uint8List data = Uint8List.fromList([0x61, 0x62, 0x63, 0x64, 0x65]);

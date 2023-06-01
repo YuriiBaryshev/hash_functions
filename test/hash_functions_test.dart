@@ -2,15 +2,15 @@ import 'package:hash_functions/hash_functions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('A group of tests', () {
-    final awesome = Awesome();
+  group('Hash function factory tests', () {
+    final HashFunctionsFactory factory = HashFunctionsFactory();
 
     setUp(() {
       // Additional setup goes here.
     });
 
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
+    test('creates SHA1', () {
+      expect(() => factory.createSHA1(), returnsNormally);
     });
   });
 }
